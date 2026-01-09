@@ -1,0 +1,2 @@
+nicegui>=1.6.0
+pydantic>=1.10
