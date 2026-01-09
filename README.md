@@ -1,30 +1,63 @@
-```markdown
-# Estoque - Cadastro de Produtos (NiceGUI + Pydantic + SQLite)
+Estoque - Cadastro de Produtos
 
-Requisitos:
-- Python 3.10+
+This is a small inventory (estoque) web app using NiceGUI + FastAPI and a SQLite database.
 
-Instalação:
-```bash
-python -m venv .venv
-source .venv/bin/activate   # ou .venv\Scripts\activate no Windows
-pip install -r requirements.txt
-```
+Quick start
 
-Rodando:
-```bash
-python app.py
-```
+1. Install dependencies:
 
-A interface ficará disponível em http://localhost:8080
+   pip install -r requirements.txt
 
-Arquivos:
-- app.py        -> aplicação NiceGUI (formulário + tabela)
-- models.py     -> modelos Pydantic (ProductCreate / Product)
-- database.py   -> acesso SQLite e operações básicas
-- requirements.txt
+2. Run the app:
 
-Observações:
-- O banco SQLite será criado no arquivo `estoque.db`.
-- Se quiser, posso adicionar funcionalidades adicionais: edição, exclusão, filtros, busca por SKU, export CSV, autenticação, testes, etc.
-```
+   python app.py
+
+   The NiceGUI interface will open (by default at http://localhost:8080).
+
+API
+
+The underlying FastAPI app exposes a simple REST API under /api:
+
+- GET /api/products
+  - Query params: name (optional), sku (optional), page_param (int), page_size_param (int)
+  - Returns: { total: int, items: [product] }
+
+- POST /api/products
+  - Body: ProductCreate JSON
+  - Returns: { id: new_product_id }
+
+- GET /api/products/{product_id}
+  - Returns product JSON or { error: "not found" }
+
+- PUT /api/products/{product_id}
+  - Body: ProductCreate JSON
+  - Returns: { updated: true/false }
+
+- DELETE /api/products/{product_id}
+  - Returns: { deleted: true/false }
+
+Example (list products):
+
+  curl "http://localhost:8080/api/products?page_param=1&page_size_param=10"
+
+CSV import / export
+
+- Export: use the "Exportar CSV" button in the UI — this will download a CSV with headers:
+  id,name,sku,price,quantity,description,category,created_at
+
+- Import: use the file upload control in the UI (accepts .csv). Uploaded rows are parsed and added. When uploading via the UI, existing products with matching SKU are updated.
+
+CSV format notes:
+- Required columns for import: name, price, quantity
+- Optional columns: sku, description, category
+- price should be a number (dot decimal); quantity should be an integer
+
+Database
+
+The app uses a local SQLite file named estoque.db by default (DB_PATH in database.py).
+
+Models
+
+See models.py for Pydantic model definitions used by the app.
+
+If you need other changes, tell me which files to modify or confirm any additional requirements.

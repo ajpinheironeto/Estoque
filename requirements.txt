@@ -1,2 +1,5 @@
 nicegui>=1.6.0
 pydantic>=1.10
+fastapi>=0.95.0
+uvicorn>=0.21.0
+python-multipart>=0.0.6
