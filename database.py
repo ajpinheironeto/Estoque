@@ -51,6 +51,33 @@ def add_product(data: ProductCreate) -> int:
     return product_id
 
 
+def update_product(product_id: int, data: ProductCreate) -> bool:
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        UPDATE products
+        SET name = ?, sku = ?, price = ?, quantity = ?, description = ?, category = ?
+        WHERE id = ?
+        """,
+        (data.name, data.sku, data.price, data.quantity, data.description, data.category, product_id),
+    )
+    conn.commit()
+    updated = cur.rowcount > 0
+    conn.close()
+    return updated
+
+
+def delete_product(product_id: int) -> bool:
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM products WHERE id = ?", (product_id,))
+    conn.commit()
+    deleted = cur.rowcount > 0
+    conn.close()
+    return deleted
+
+
 def list_products() -> List[Product]:
     conn = get_conn()
     cur = conn.cursor()
